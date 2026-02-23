@@ -1,6 +1,5 @@
+import { ComponentExample } from "@/components/component-example";
 
-export default function Home() {
-  return (
-  <div></div>
-  );
+export default function Page() {
+  return <div></div>;
 }
