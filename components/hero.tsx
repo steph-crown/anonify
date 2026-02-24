@@ -20,26 +20,19 @@ function Token({ children }: { children: React.ReactNode }) {
 export function Hero() {
   return (
     <section className="mx-auto flex max-w-[1400px] flex-col items-center px-6 pt-20 pb-28">
-      {/* Pill tag */}
-      <div className="mb-12 inline-flex items-center gap-2 rounded-full border border-stone-300 px-5 py-2.5 text-[0.75rem] font-medium uppercase tracking-[0.15em] text-stone-400">
-        Your prompts, your privacy
-        <span className="text-stone-300">&rarr;</span>
-      </div>
-
       {/* Heading */}
-      <h1 className="text-center text-6xl font-black leading-[0.92] tracking-[-0.03em] text-stone-900 md:text-7xl lg:text-[6.5rem]">
-        Protect{" "}
-        <em className="font-display text-green-600">sensitive</em> data
+      <h1 className="text-center text-6xl font-black leading-[0.92] tracking-[-0.03em] text-stone-900 md:text-7xl lg:text-[6.5rem] mt-4">
+        Protect <em className="font-display text-green-600">sensitive</em> data
         <br />
         in your prompts
       </h1>
 
       {/* Subtitle */}
-      <p className="mt-8 max-w-[40rem] text-center text-lg leading-relaxed text-stone-500">
+      <p className="mt-8 max-w-160 text-center text-lg leading-relaxed text-stone-500">
         Scrub sensitive data from your prompts directly in your browser. Mask
-        names, API keys, and financials with context-aware placeholders that keep
-        your AI&apos;s logic intact&mdash;all without a single byte leaving your
-        device
+        names, API keys, and financials with context-aware placeholders that
+        keep your AI&apos;s logic intact&mdash;all without a single byte leaving
+        your device
       </p>
 
       {/* Buttons */}
@@ -105,10 +98,10 @@ export function Hero() {
         {/* After card */}
         <div className="flex-1 rounded-2xl border-2 border-green-600/25 bg-white/60 p-8 text-[0.9rem] leading-[1.75] text-stone-600">
           Can you analyze this server error? It happened when{" "}
-          <Token>PERSON_1</Token> (id: <Token>ID_1</Token>) tried to access
-          the <Token>ORG_1</Token> production API at <Token>IP_ADDR_1</Token>.
-          He was using the secret key <Token>SENSITIVE_KEY_1</Token> to process
-          a <Token>VALUE_1</Token> payment for <Token>ORG_2</Token>. We need to
+          <Token>PERSON_1</Token> (id: <Token>ID_1</Token>) tried to access the{" "}
+          <Token>ORG_1</Token> production API at <Token>IP_ADDR_1</Token>. He
+          was using the secret key <Token>SENSITIVE_KEY_1</Token> to process a{" "}
+          <Token>VALUE_1</Token> payment for <Token>ORG_2</Token>. We need to
           know if the leak happened at our <Token>LOC_1</Token> office or during
           the handshake.
         </div>
