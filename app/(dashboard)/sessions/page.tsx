@@ -36,7 +36,7 @@ export default function SessionsPage() {
           Sessions
         </h1>
         <Link
-          href="/"
+          href="/new"
           className="inline-flex items-center gap-2 rounded-full bg-stone-900 px-4 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800"
         >
           <svg

@@ -17,9 +17,18 @@ import {
 } from "@/components/ui/command"
 
 const recents = [
-  "Prompt with API keys and names",
-  "Support ticket with PII",
-  "Financial summary anonymization",
+  {
+    id: "1",
+    title: "Prompt with API keys and names",
+  },
+  {
+    id: "2",
+    title: "Support ticket with PII",
+  },
+  {
+    id: "3",
+    title: "Financial summary anonymization",
+  },
 ]
 
 type DashboardSidebarProps = {
@@ -92,7 +101,7 @@ export function DashboardSidebar({
 
         <nav className="flex flex-col gap-0.5 p-3">
           <Link
-            href="/sessions"
+            href="/new"
             className={`flex items-center rounded-lg py-2.5 text-stone-700 transition-colors hover:bg-stone-200/60 hover:text-stone-900 ${
               isCollapsed ? "justify-center px-0" : "gap-3 px-3"
             }`}
@@ -172,13 +181,13 @@ export function DashboardSidebar({
             </h3>
 
             <ul className="flex-1 space-y-0.5 overflow-y-auto px-2">
-              {recents.map((title) => (
-                <li key={title}>
+              {recents.map((item) => (
+                <li key={item.id}>
                   <Link
-                    href="/sessions"
+                    href={`/sessions/${item.id}`}
                     className="block truncate rounded-lg px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-200/60 hover:text-stone-900 font-medium"
                   >
-                    {title}
+                    {item.title}
                   </Link>
                 </li>
               ))}
@@ -204,16 +213,16 @@ export function DashboardSidebar({
             </CommandGroup>
             <CommandSeparator />
             <CommandGroup heading="Sessions">
-              {recents.map((title) => (
+              {recents.map((item) => (
                 <CommandItem
-                  key={title}
-                  value={title}
+                  key={item.id}
+                  value={item.title}
                   onSelect={() => {
-                    globalThis.location.href = "/sessions"
+                    globalThis.location.href = `/sessions/${item.id}`
                     setSearchOpen(false)
                   }}
                 >
-                  <span className="truncate">{title}</span>
+                  <span className="truncate">{item.title}</span>
                   <CommandShortcut>↵</CommandShortcut>
                 </CommandItem>
               ))}
