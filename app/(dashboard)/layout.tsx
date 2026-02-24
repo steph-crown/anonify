@@ -1,0 +1,14 @@
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex h-screen bg-[#F5F0E5]">
+      <DashboardSidebar />
+      <main className="flex-1 overflow-auto bg-white">{children}</main>
+    </div>
+  );
+}
