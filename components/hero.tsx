@@ -1,5 +1,3 @@
-import { Fragment } from "react";
-
 const categories = [
   "Names",
   "API Keys",
@@ -21,14 +19,14 @@ export function Hero() {
   return (
     <section className="mx-auto flex max-w-[1400px] flex-col items-center px-6 pt-20 pb-28">
       {/* Heading */}
-      <h1 className="text-center text-6xl font-black leading-[0.92] tracking-[-0.03em] text-stone-900 md:text-7xl lg:text-[6.5rem] mt-4">
+      <h1 className="text-center text-6xl font-black leading-[0.92] tracking-[-0.03em] text-stone-900 md:text-7xl lg:text-[6.5rem] mt-6">
         Protect <em className="font-display text-green-600">sensitive</em> data
         <br />
         in your prompts
       </h1>
 
       {/* Subtitle */}
-      <p className="mt-8 max-w-160 text-center text-lg leading-relaxed text-stone-500">
+      <p className="mt-8 max-w-200 text-center text-lg leading-normal text-stone-500">
         Scrub sensitive data from your prompts directly in your browser. Mask
         names, API keys, and financials with context-aware placeholders that
         keep your AI&apos;s logic intact&mdash;all without a single byte leaving
@@ -46,9 +44,9 @@ export function Hero() {
       </div>
 
       {/* Categories bar */}
-      <div className="mt-14 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-stone-200 px-6 py-3 text-xs text-stone-400">
+      <div className="mt-6 flex items-center justify-center gap-3 text-sm">
         <svg
-          className="size-3.5 text-stone-400"
+          className="size-4 text-stone-500"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -58,14 +56,19 @@ export function Hero() {
         >
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
-        <span>Protects your...</span>
-        <span className="text-stone-300">&rsaquo;</span>
-        {categories.map((item, i) => (
-          <Fragment key={item}>
-            {i > 0 && <span className="text-stone-300">&middot;</span>}
-            <span className="text-stone-500">[{item}]</span>
-          </Fragment>
-        ))}
+        <span className="font-medium text-stone-700">Protects your...</span>
+        <span className="text-stone-400">&rsaquo;</span>
+        <span className="grid justify-items-start items-center overflow-hidden">
+          {categories.map((item, i) => (
+            <span
+              key={item}
+              className="col-start-1 row-start-1 animate-category-cycle whitespace-nowrap rounded-md bg-green-100 px-2 py-0.5 font-semibold text-green-700"
+              style={{ animationDelay: `${i * 2}s` }}
+            >
+              [{item}]
+            </span>
+          ))}
+        </span>
       </div>
 
       {/* Before / After comparison */}
