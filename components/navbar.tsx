@@ -1,19 +1,11 @@
 import Link from "next/link";
+import { Logo } from "./icons/logo";
 
 export function Navbar() {
   return (
     <header className="w-full">
       <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-stone-900"
-        >
-          <span className="flex gap-1">
-            <span className="size-3 rounded-full bg-stone-900" />
-            <span className="size-3 rounded-full bg-stone-400" />
-          </span>
-          anonify
-        </Link>
+        <Logo />
 
         <div className="flex items-center gap-7">
           <Link
