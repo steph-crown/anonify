@@ -1,29 +1,44 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Logo } from "./icons/logo";
+import { useState } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Logo } from "./icons/logo"
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command"
 
 const recents = [
   "Prompt with API keys and names",
   "Support ticket with PII",
   "Financial summary anonymization",
-];
+]
 
 export function DashboardSidebar() {
-  const pathname = usePathname();
-  const isSessions = pathname === "/sessions";
-  const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname()
+  const isSessions = pathname === "/sessions"
+  const [collapsed, setCollapsed] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
 
   return (
-    <aside
-      className={`flex h-full shrink-0 flex-col border-r border-stone-200 bg-white/40 transition-[width] duration-200 ${
-        collapsed ? "w-18" : "w-64"
-      }`}
-    >
+    <>
+      <aside
+        className={`flex h-full shrink-0 flex-col border-r border-stone-200 bg-white/40 transition-[width] duration-200 ${
+          collapsed ? "w-18" : "w-64"
+        }`}
+      >
       <div
-        className={`flex items-center gap-2 px-3 py-4 ${collapsed ? "justify-center" : "justify-between"}`}
+        className={`flex items-center gap-2 px-3 py-4 ${
+          collapsed ? "justify-center" : "justify-between"
+        }`}
       >
         {!collapsed && <Logo />}
 
@@ -74,6 +89,7 @@ export function DashboardSidebar() {
         <button
           type="button"
           title="Search"
+          onClick={() => setSearchOpen(true)}
           className={`flex w-full items-center rounded-lg py-2.5 text-stone-700 transition-colors hover:bg-stone-200/60 hover:text-stone-900 cursor-pointer ${
             collapsed ? "justify-center px-0" : "gap-3 px-3"
           }`}
@@ -138,6 +154,43 @@ export function DashboardSidebar() {
           </ul>
         </div>
       )}
-    </aside>
-  );
+      </aside>
+
+      <CommandDialog
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        title="Search"
+        description="Search across your Anonify sessions and text."
+      >
+        <Command>
+          <CommandInput placeholder="Search sessions, prompts, or IDs..." />
+          <CommandList>
+            <CommandEmpty>No matches found.</CommandEmpty>
+            <CommandGroup heading="You can search by">
+              <CommandItem disabled>Session title</CommandItem>
+              <CommandItem disabled>Original text</CommandItem>
+              <CommandItem disabled>Protected text</CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Sessions">
+              {recents.map((title) => (
+                <CommandItem
+                  key={title}
+                  value={title}
+                  onSelect={() => {
+                    // Navigate to sessions; replace with router push when wiring real routes
+                    globalThis.location.href = "/sessions"
+                    setSearchOpen(false)
+                  }}
+                >
+                  <span className="truncate">{title}</span>
+                  <CommandShortcut>↵</CommandShortcut>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </CommandDialog>
+    </>
+  )
 }
