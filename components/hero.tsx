@@ -100,7 +100,7 @@ export function Hero() {
         </div>
 
         {/* After card */}
-        <div className="flex-1 rounded-2xl border-4 border-green-600/25 bg-white/60 p-5 text-[0.85rem] leading-[1.75] text-stone-600 sm:p-8 sm:text-[0.9rem]">
+        <div className="flex-1 animate-border-pulse rounded-2xl border-4 bg-white/60 p-5 text-[0.85rem] leading-[1.75] text-stone-600 sm:p-8 sm:text-[0.9rem]">
           Can you analyze this server error? It happened when{" "}
           <Token>PERSON_1</Token> (id: <Token>ID_1</Token>) tried to access the{" "}
           <Token>ORG_1</Token> production API at <Token>IP_ADDR_1</Token>. He
