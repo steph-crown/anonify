@@ -31,7 +31,7 @@ const sessions = [
 export default function SessionsPage() {
   return (
     <div className="flex flex-col">
-      <header className="flex items-center justify-between pb-0 pt-12">
+      <header className="flex items-center justify-between pb-0 pt-4 sm:pt-12">
         <h1 className="text-2xl font-bold tracking-tight text-stone-900">
           Sessions
         </h1>
