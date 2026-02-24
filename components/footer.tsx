@@ -15,7 +15,7 @@ export function Footer() {
               GitHub
             </Link>
             <Link
-              href="#"
+              href="/sessions"
               className="text-stone-500 transition-colors hover:text-stone-900"
             >
               My sessions

@@ -21,7 +21,7 @@ export function Navbar() {
             GitHub
           </Link>
           <Link
-            href="#"
+            href="/sessions"
             className="text-sm text-stone-500 transition-colors hover:text-stone-900"
           >
             My sessions
@@ -91,7 +91,7 @@ export function Navbar() {
             GitHub
           </Link>
           <Link
-            href="#"
+            href="/sessions"
             className="border-b border-stone-200 py-4 text-base font-medium text-stone-700 transition-colors hover:text-stone-900"
             onClick={() => setMenuOpen(false)}
           >

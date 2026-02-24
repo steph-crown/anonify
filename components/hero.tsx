@@ -39,9 +39,12 @@ export function Hero() {
           Anonymize now
         </button>
 
-        <button className="w-full rounded-full border border-stone-900 px-8 py-3 text-[0.9rem] font-semibold text-stone-900 transition-colors hover:bg-stone-900 hover:text-[#F5F0E5] sm:w-auto">
+        <a
+          href="/sessions"
+          className="w-full rounded-full border border-stone-900 px-8 py-3 text-center text-[0.9rem] font-semibold text-stone-900 transition-colors hover:bg-stone-900 hover:text-[#F5F0E5] sm:w-auto"
+        >
           My sessions
-        </button>
+        </a>
       </div>
 
       {/* Categories bar */}
