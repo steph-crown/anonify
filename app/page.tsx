@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { Playground } from "@/components/playground";
+import { Privacy } from "@/components/privacy";
 
 export default function Page() {
   return (
@@ -8,6 +9,7 @@ export default function Page() {
       <Navbar />
       <Hero />
       <Playground />
+      <Privacy />
     </main>
   );
 }
