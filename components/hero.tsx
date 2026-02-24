@@ -17,16 +17,16 @@ function Token({ children }: { children: React.ReactNode }) {
 
 export function Hero() {
   return (
-    <section className="mx-auto flex max-w-[1400px] flex-col items-center px-6 pt-20 pb-28">
+    <section className="mx-auto flex max-w-[1400px] flex-col items-center px-5 pt-12 pb-20 sm:px-6 sm:pt-20 sm:pb-28">
       {/* Heading */}
-      <h1 className="text-center text-6xl font-black leading-[0.92] tracking-[-0.03em] text-stone-900 md:text-7xl lg:text-[6.5rem] mt-6">
+      <h1 className="mt-6 text-center text-4xl font-black leading-[0.92] tracking-[-0.03em] text-stone-900 sm:text-5xl md:text-7xl lg:text-[6.5rem]">
         Protect <em className="font-display text-green-600">sensitive</em> data
         <br />
         in your prompts
       </h1>
 
       {/* Subtitle */}
-      <p className="mt-8 max-w-200 text-center text-lg leading-normal text-stone-500">
+      <p className="mt-6 max-w-200 text-center text-sm leading-normal text-stone-500 sm:mt-8 sm:text-lg">
         Scrub sensitive data from your prompts directly in your browser. Mask
         names, API keys, and financials with context-aware placeholders that
         keep your AI&apos;s logic intact&mdash;all without a single byte leaving
@@ -34,11 +34,12 @@ export function Hero() {
       </p>
 
       {/* Buttons */}
-      <div className="mt-10 flex items-center gap-4">
-        <button className="rounded-full bg-stone-900 px-8 py-3 text-[0.9rem] font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800">
+      <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4 w-full sm:w-[unset]">
+        <button className="w-full rounded-full bg-stone-900 px-8 py-3 text-[0.9rem] font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 sm:w-auto">
           Anonymize now
         </button>
-        <button className="rounded-full border border-stone-900 px-8 py-3 text-[0.9rem] font-semibold text-stone-900 transition-colors hover:bg-stone-900 hover:text-[#F5F0E5]">
+
+        <button className="w-full rounded-full border border-stone-900 px-8 py-3 text-[0.9rem] font-semibold text-stone-900 transition-colors hover:bg-stone-900 hover:text-[#F5F0E5] sm:w-auto">
           My sessions
         </button>
       </div>
@@ -72,9 +73,9 @@ export function Hero() {
       </div>
 
       {/* Before / After comparison */}
-      <div className="mt-20 flex w-full max-w-5xl flex-col items-center gap-6 md:flex-row md:items-stretch md:gap-8">
+      <div className="mt-14 flex w-full max-w-5xl flex-col items-center gap-6 sm:mt-20 md:flex-row md:items-stretch md:gap-8">
         {/* Before card */}
-        <div className="flex-1 rounded-2xl border border-stone-200 bg-white/60 p-8 text-[0.9rem] leading-[1.75] text-stone-600">
+        <div className="flex-1 rounded-2xl border border-stone-200 bg-white/60 p-5 text-[0.85rem] leading-[1.75] text-stone-600 sm:p-8 sm:text-[0.9rem]">
           Can you analyze this server error? It happened when John Miller (id:
           jm_992) tried to access the Stripe production API at 192.168.1.44. He
           was using the secret key sk_live_51Msz82K9l to process a $4,500
@@ -99,7 +100,7 @@ export function Hero() {
         </div>
 
         {/* After card */}
-        <div className="flex-1 rounded-2xl border-2 border-green-600/25 bg-white/60 p-8 text-[0.9rem] leading-[1.75] text-stone-600">
+        <div className="flex-1 rounded-2xl border-4 border-green-600/25 bg-white/60 p-5 text-[0.85rem] leading-[1.75] text-stone-600 sm:p-8 sm:text-[0.9rem]">
           Can you analyze this server error? It happened when{" "}
           <Token>PERSON_1</Token> (id: <Token>ID_1</Token>) tried to access the{" "}
           <Token>ORG_1</Token> production API at <Token>IP_ADDR_1</Token>. He
