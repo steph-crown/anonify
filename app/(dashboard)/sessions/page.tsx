@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const sessions = [
   {
     id: "1",
@@ -29,13 +31,13 @@ const sessions = [
 export default function SessionsPage() {
   return (
     <div className="flex flex-col">
-      <header className="flex items-center justify-between border-b border-stone-200 px-8 py-6">
+      <header className="flex items-center justify-between pb-0 pt-12">
         <h1 className="text-2xl font-bold tracking-tight text-stone-900">
           Sessions
         </h1>
-        <a
+        <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-lg bg-stone-900 px-4 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800"
+          className="inline-flex items-center gap-2 rounded-full bg-stone-900 px-4 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800"
         >
           <svg
             className="size-4"
@@ -49,10 +51,10 @@ export default function SessionsPage() {
             <path d="M12 5v14M5 12h14" />
           </svg>
           New session
-        </a>
+        </Link>
       </header>
 
-      <div className="px-8 py-6">
+      <div className="py-6">
         <div className="relative mb-6">
           <svg
             className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-stone-400"
@@ -69,11 +71,11 @@ export default function SessionsPage() {
           <input
             type="search"
             placeholder="Search your sessions..."
-            className="w-full rounded-lg border border-stone-200 bg-stone-50 py-2.5 pl-10 pr-4 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-300"
+            className="w-full rounded-lg border border-stone-200 bg-stone-50 py-3 pl-10 pr-4 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-300"
           />
         </div>
 
-        <p className="mb-6 text-sm text-stone-500">
+        <p className="mb-2 text-sm text-stone-500">
           {sessions.length} sessions
         </p>
 
