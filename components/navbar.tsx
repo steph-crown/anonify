@@ -9,7 +9,7 @@ export function Navbar() {
 
   return (
     <header className="w-full">
-      <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
+      <nav className="wrapper flex items-center justify-between py-5">
         <Logo />
 
         {/* Desktop nav */}

@@ -17,7 +17,7 @@ function Token({ children }: { children: React.ReactNode }) {
 
 export function Hero() {
   return (
-    <section className="mx-auto flex max-w-[1400px] flex-col items-center px-5 pt-12 pb-20 sm:px-6 sm:pt-20 sm:pb-28">
+    <section className="wrapper flex flex-col items-center pt-12 pb-20 sm:pt-20 sm:pb-28">
       {/* Heading */}
       <h1 className="mt-6 text-center text-4xl font-black leading-[0.92] tracking-[-0.03em] text-stone-900 sm:text-5xl md:text-7xl lg:text-[6.5rem]">
         Protect <em className="font-display text-green-600">sensitive</em> data
