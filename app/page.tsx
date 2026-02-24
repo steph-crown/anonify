@@ -2,6 +2,7 @@ import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { Playground } from "@/components/playground";
 import { Privacy } from "@/components/privacy";
+import { Footer } from "@/components/footer";
 
 export default function Page() {
   return (
@@ -10,6 +11,7 @@ export default function Page() {
       <Hero />
       <Playground />
       <Privacy />
+      <Footer />
     </main>
   );
 }
