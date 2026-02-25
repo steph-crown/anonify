@@ -472,7 +472,7 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
                     </div>
                   </div>
                   <p className="mt-2 text-xs text-stone-500 text-left">
-                    … {formatRelativeTime(item.createdAt)}
+                    {formatRelativeTime(item.createdAt)}
                   </p>
                 </button>
               </article>
