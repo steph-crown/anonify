@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 type EditorShellProps = {
   dotVariant?: "neutral" | "traffic";
@@ -37,6 +38,12 @@ function EditorShell({
 export function Playground() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+
+  const router = useRouter();
+
+  const goToNew = () => {
+    router.push("/new");
+  };
 
   const handleCopy = async () => {
     if (output) await navigator.clipboard.writeText(output);
@@ -96,6 +103,8 @@ export function Playground() {
                 placeholder="Type here ..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onFocus={goToNew}
+                onClick={goToNew}
               />
             </EditorShell>
           </div>

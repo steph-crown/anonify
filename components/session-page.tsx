@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -139,6 +139,8 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
   const [renameTitleInput, setRenameTitleInput] = useState("");
   const [deleteSessionOpen, setDeleteSessionOpen] = useState(false);
 
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
   const hasHistory = history.length > 0;
   const isNew = mode === "new";
   const lastRaw = (history[0]?.raw ?? "").trim();
@@ -180,6 +182,14 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
       cancelled = true;
     };
   }, [initialId, mode]);
+
+  useEffect(() => {
+    if (!isNew) return;
+    if (loading) return;
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isNew, loading]);
 
   const mappingEntries = useMemo(() => {
     const byOriginal = new Map<string, MaskMappingEntry>();
@@ -481,6 +491,7 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
               <span className="ml-2">Input</span>
             </div>
             <textarea
+              ref={inputRef}
               rows={10}
               value={raw}
               onChange={(e) => setRaw(e.target.value)}

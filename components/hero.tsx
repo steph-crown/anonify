@@ -31,9 +31,12 @@ export function Hero() {
 
       {/* Buttons */}
       <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4 w-full sm:w-[unset]">
-        <button className="w-full rounded-full bg-stone-900 px-8 py-3 text-[0.9rem] font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 sm:w-auto">
+        <Link
+          href="/new"
+          className="w-full rounded-full bg-stone-900 px-8 py-3 text-[0.9rem] font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 sm:w-auto text-center"
+        >
           Anonymize now
-        </button>
+        </Link>
 
         <Link
           href="/sessions"
