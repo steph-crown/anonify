@@ -47,18 +47,43 @@ type SessionPageProps = Readonly<{
   mode: "new" | "existing";
 }>;
 
-function renderMaskedText(masked: string) {
+type MaskTokenActions = {
+  interactive?: boolean;
+  onUnmaskOne?: (maskToken: string, index: number) => void;
+  onUnmaskAll?: (maskToken: string) => void;
+};
+
+function renderMaskedText(masked: string, actions?: MaskTokenActions) {
   if (!masked) return null;
   const nodes: React.ReactNode[] = [];
   const re = /\[([A-Z]+_\d+)]/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = re.exec(masked)) !== null) {
-    const full = match[0];
-    const inner = match[1];
+    const full = match[0]; // e.g. [PERSON_1]
+    const inner = match[1]; // e.g. PERSON_1
     const index = match.index ?? 0;
     if (index > lastIndex) nodes.push(masked.slice(lastIndex, index));
-    nodes.push(<MaskToken key={`${index}-${inner}`}>{inner}</MaskToken>);
+
+    const key = `${index}-${inner}`;
+
+    if (actions?.interactive && actions.onUnmaskOne && actions.onUnmaskAll) {
+      nodes.push(
+        <MaskToken
+          key={key}
+          interactive
+          fullToken={full}
+          index={index}
+          onUnmaskOne={actions.onUnmaskOne}
+          onUnmaskAll={actions.onUnmaskAll}
+        >
+          {inner}
+        </MaskToken>,
+      );
+    } else {
+      nodes.push(<MaskToken key={key}>{inner}</MaskToken>);
+    }
+
     lastIndex = index + full.length;
   }
   if (lastIndex < masked.length) nodes.push(masked.slice(lastIndex));
@@ -68,7 +93,7 @@ function renderMaskedText(masked: string) {
 /** Derive a short session title from the first anonymization's masked text (first line, ~60 chars). */
 function sessionTitleFromMasked(masked: string): string {
   const firstLine = masked.split(/\r?\n/)[0]?.trim() ?? "";
-  const short = firstLine.slice(0, 100).trim();
+  const short = firstLine.slice(0, 60).trim();
   if (!short) return "Anonymization";
   return firstLine.length > 60 ? `${short}…` : short;
 }
@@ -208,6 +233,72 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
     await deleteSession(sessionId);
     setDeleteSessionOpen(false);
     router.replace("/sessions");
+  }
+
+  function getOriginalForMask(maskToken: string): string | null {
+    for (const entry of Object.values(mapping ?? {})) {
+      if (entry.mask === maskToken) return entry.original;
+    }
+    return null;
+  }
+
+  function handleUnmaskInstance(maskToken: string, index: number) {
+    const original = getOriginalForMask(maskToken);
+    if (!original) return;
+
+    setMasked((prev) => {
+      if (!prev) return prev;
+      return (
+        prev.slice(0, index) +
+        original +
+        prev.slice(index + maskToken.length)
+      );
+    });
+
+    setHistory((prev) => {
+      if (!prev.length) return prev;
+      const [latest, ...rest] = prev;
+      const newMasked =
+        latest.masked.slice(0, index) +
+        original +
+        latest.masked.slice(index + maskToken.length);
+      return [{ ...latest, masked: newMasked }, ...rest];
+    });
+  }
+
+  function handleUnmaskAll(maskToken: string) {
+    const original = getOriginalForMask(maskToken);
+    if (!original) return;
+
+    setMasked((prev) =>
+      prev ? prev.split(maskToken).join(original) : prev,
+    );
+
+    setHistory((prev) =>
+      prev.map((item) => {
+        if (!item.masked.includes(maskToken)) return item;
+        const newMasked = item.masked.split(maskToken).join(original);
+        const newMapping = { ...item.mapping };
+        for (const [key, entry] of Object.entries(newMapping)) {
+          if (entry.mask === maskToken) {
+            // remove this mapping for this anonymization
+            // so it no longer appears in its mapping table
+            delete newMapping[key];
+          }
+        }
+        return { ...item, masked: newMasked, mapping: newMapping };
+      }),
+    );
+
+    setMapping((prev) => {
+      const next = { ...prev };
+      for (const [key, entry] of Object.entries(next)) {
+        if (entry.mask === maskToken) {
+          delete next[key];
+        }
+      }
+      return next;
+    });
   }
 
   async function handleAnonymize() {
@@ -416,7 +507,11 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
             </div>
             <div className="h-[300px] overflow-y-auto px-5 py-4 text-sm leading-relaxed text-stone-800">
               {masked ? (
-                renderMaskedText(masked)
+                renderMaskedText(masked, {
+                  interactive: true,
+                  onUnmaskOne: handleUnmaskInstance,
+                  onUnmaskAll: handleUnmaskAll,
+                })
               ) : (
                 <span className="text-stone-300">
                   Anonymized text will appear here after you run this session.
