@@ -16,6 +16,8 @@ type MaskTokenProps = Readonly<{
   fullToken?: string;
   /** Index of this token in the masked string (for unmask-one). */
   index?: number;
+  /** Optional original (decrypted) value backing this mask. */
+  originalValue?: string | null;
   onUnmaskOne?: (maskToken: string, index: number) => void;
   onUnmaskAll?: (maskToken: string) => void;
 }>;
@@ -25,6 +27,7 @@ export function MaskToken({
   interactive,
   fullToken,
   index,
+  originalValue,
   onUnmaskOne,
   onUnmaskAll,
 }: MaskTokenProps) {
@@ -70,16 +73,24 @@ export function MaskToken({
             align="start"
             className="w-44 p-1.5 text-xs gap-0!"
           >
+            {originalValue && (
+              <div className="mb-1.5 border-b border-stone-100 px-2 pb-1 text-[10px] text-stone-500">
+                Decrypted:{" "}
+                <span className="font-mono text-stone-700 break-all font-semibold">
+                  {originalValue}
+                </span>
+              </div>
+            )}
             <button
               type="button"
-              className="flex w-full items-center rounded px-2 py-1.5 text-left text-stone-700 hover:bg-stone-100 font-medium"
+              className="flex w-full items-center rounded px-2 py-1.5 text-left text-stone-700 hover:bg-stone-100 font-medium cursor-pointer"
               onClick={() => onUnmaskOne?.(mask, index)}
             >
               Unmask this instance
             </button>
             <button
               type="button"
-              className="mt-0.5 flex w-full items-center rounded px-2 py-1.5 text-left text-stone-700 hover:bg-stone-100 font-medium"
+              className="mt-0.5 flex w-full items-center rounded px-2 py-1.5 text-left text-stone-700 hover:bg-stone-100 font-medium cursor-pointer"
               onClick={() => onUnmaskAll?.(mask)}
             >
               Unmask all {mask}

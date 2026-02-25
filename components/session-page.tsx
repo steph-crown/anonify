@@ -51,6 +51,7 @@ type MaskTokenActions = {
   interactive?: boolean;
   onUnmaskOne?: (maskToken: string, index: number) => void;
   onUnmaskAll?: (maskToken: string) => void;
+  getOriginal?: (maskToken: string) => string | null;
 };
 
 function renderMaskedText(masked: string, actions?: MaskTokenActions) {
@@ -68,12 +69,16 @@ function renderMaskedText(masked: string, actions?: MaskTokenActions) {
     const key = `${index}-${inner}`;
 
     if (actions?.interactive && actions.onUnmaskOne && actions.onUnmaskAll) {
+      const originalValue = actions.getOriginal
+        ? actions.getOriginal(full)
+        : null;
       nodes.push(
         <MaskToken
           key={key}
           interactive
           fullToken={full}
           index={index}
+          originalValue={originalValue}
           onUnmaskOne={actions.onUnmaskOne}
           onUnmaskAll={actions.onUnmaskAll}
         >
@@ -511,6 +516,7 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
                   interactive: true,
                   onUnmaskOne: handleUnmaskInstance,
                   onUnmaskAll: handleUnmaskAll,
+                  getOriginal: getOriginalForMask,
                 })
               ) : (
                 <span className="text-stone-300">
@@ -567,7 +573,19 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
                     </div>
                   </div>
                   <p className="mt-2 text-xs text-stone-500 text-left">
-                    {formatRelativeTime(item.createdAt)}
+                    {(() => {
+                      const sensitiveCount =
+                        item.masked.match(/\[[A-Z]+_\d+]/g)?.length ?? 0;
+                      const totalTokens = item.raw
+                        .trim()
+                        .split(/\s+/)
+                        .filter(Boolean).length;
+                      return `${sensitiveCount}/${
+                        totalTokens || 0
+                      } sensitive tokens found · ${formatRelativeTime(
+                        item.createdAt,
+                      )}`;
+                    })()}
                   </p>
                 </button>
               </article>
