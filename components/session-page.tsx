@@ -96,21 +96,12 @@ export function SessionPage({
 
       {/* History list */}
       <section className="mt-2 space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-500">
-          Anonymizations in this session
-        </h2>
-        {!hasHistory && (
-          <p className="text-sm text-stone-400">
-            No anonymizations yet. Run this session to see a history of
-            protected prompts.
-          </p>
-        )}
         {hasHistory && (
-          <div className="space-y-3">
+          <div className="flex flex-col">
             {anonymizations.map((item) => (
               <article
                 key={item.id}
-                className="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700"
+                className="border-t last:border-b border-stone-200 bg-white px-4 py-3 text-sm text-stone-700"
               >
                 <h3 className="mb-2 text-sm font-medium text-stone-900">
                   {item.title}
