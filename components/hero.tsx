@@ -1,3 +1,7 @@
+import Link from "next/link";
+
+import { MaskToken } from "./mask-token";
+
 const categories = [
   "Names",
   "API Keys",
@@ -6,14 +10,6 @@ const categories = [
   "Passwords",
   "Custom Secrets",
 ];
-
-function Token({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline rounded-sm bg-green-100 px-1 py-0.5 font-mono text-[0.8em] font-semibold text-green-800">
-      [{children}]
-    </span>
-  );
-}
 
 export function Hero() {
   return (
@@ -39,12 +35,12 @@ export function Hero() {
           Anonymize now
         </button>
 
-        <a
+        <Link
           href="/sessions"
           className="w-full rounded-full border border-stone-900 px-8 py-3 text-center text-[0.9rem] font-semibold text-stone-900 transition-colors hover:bg-stone-900 hover:text-[#F5F0E5] sm:w-auto"
         >
           My sessions
-        </a>
+        </Link>
       </div>
 
       {/* Categories bar */}
@@ -105,12 +101,13 @@ export function Hero() {
         {/* After card */}
         <div className="flex-1 animate-border-pulse rounded-2xl border-4 bg-white/60 p-5 text-[0.85rem] leading-[1.75] text-stone-600 sm:p-8 sm:text-[0.9rem]">
           Can you analyze this server error? It happened when{" "}
-          <Token>PERSON_1</Token> (id: <Token>ID_1</Token>) tried to access the{" "}
-          <Token>ORG_1</Token> production API at <Token>IP_ADDR_1</Token>. He
-          was using the secret key <Token>SENSITIVE_KEY_1</Token> to process a{" "}
-          <Token>VALUE_1</Token> payment for <Token>ORG_2</Token>. We need to
-          know if the leak happened at our <Token>LOC_1</Token> office or during
-          the handshake.
+          <MaskToken>PERSON_1</MaskToken> (id: <MaskToken>ID_1</MaskToken>)
+          tried to access the <MaskToken>ORG_1</MaskToken> production API at{" "}
+          <MaskToken>IP_ADDR_1</MaskToken>. He was using the secret key{" "}
+          <MaskToken>SENSITIVE_KEY_1</MaskToken> to process a{" "}
+          <MaskToken>VALUE_1</MaskToken> payment for{" "}
+          <MaskToken>ORG_2</MaskToken>. We need to know if the leak happened at
+          our <MaskToken>LOC_1</MaskToken> office or during the handshake.
         </div>
       </div>
     </section>

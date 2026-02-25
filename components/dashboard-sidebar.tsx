@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Logo } from "./icons/logo"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Logo } from "./icons/logo";
 import {
   Command,
   CommandDialog,
@@ -14,53 +14,44 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@/components/ui/command"
-
-const recents = [
-  {
-    id: "1",
-    title: "Prompt with API keys and names",
-  },
-  {
-    id: "2",
-    title: "Support ticket with PII",
-  },
-  {
-    id: "3",
-    title: "Financial summary anonymization",
-  },
-]
+} from "@/components/ui/command";
+import { listSessions, type StoredSession } from "@/lib/db";
 
 type DashboardSidebarProps = {
-  variant?: "inline" | "overlay"
-  onOverlayClose?: () => void
-}
+  variant?: "inline" | "overlay";
+  onOverlayClose?: () => void;
+};
 
 export function DashboardSidebar({
   variant = "inline",
   onOverlayClose,
 }: DashboardSidebarProps = {}) {
-  const pathname = usePathname()
-  const isSessions = pathname === "/sessions"
-  const [collapsed, setCollapsed] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const pathname = usePathname();
+  const isSessions = pathname === "/sessions";
+  const [collapsed, setCollapsed] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [sessions, setSessions] = useState<StoredSession[]>([]);
 
-  const isOverlay = variant === "overlay"
-  const isCollapsed = isOverlay ? false : collapsed
+  useEffect(() => {
+    listSessions().then(setSessions);
+  }, [pathname]);
+
+  const isOverlay = variant === "overlay";
+  const isCollapsed = isOverlay ? false : collapsed;
 
   const handleCollapseClick = () => {
     if (isOverlay) {
-      onOverlayClose?.()
+      onOverlayClose?.();
     } else {
-      setCollapsed((c) => !c)
+      setCollapsed((c) => !c);
     }
-  }
+  };
 
   const asideClassName = isOverlay
     ? "flex h-full w-72 flex-col border-r border-stone-200 bg-white/40"
     : `flex h-full shrink-0 flex-col border-r border-stone-200 bg-white/40 transition-[width] duration-200 ${
         isCollapsed ? "w-18" : "w-64"
-      }`
+      }`;
 
   return (
     <>
@@ -80,8 +71,8 @@ export function DashboardSidebar({
               isOverlay
                 ? "Close navigation"
                 : isCollapsed
-                ? "Expand sidebar"
-                : "Collapse sidebar"
+                  ? "Expand sidebar"
+                  : "Collapse sidebar"
             }
           >
             <svg
@@ -181,16 +172,24 @@ export function DashboardSidebar({
             </h3>
 
             <ul className="flex-1 space-y-0.5 overflow-y-auto px-2">
-              {recents.map((item) => (
-                <li key={item.id}>
-                  <Link
-                    href={`/sessions/${item.id}`}
-                    className="block truncate rounded-lg px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-200/60 hover:text-stone-900 font-medium"
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
+              {sessions.slice(0, 10).map((item) => {
+                const href = `/sessions/${item.id}`;
+                const isActive = pathname === href;
+                return (
+                  <li key={item.id}>
+                    <Link
+                      href={href}
+                      className={`block truncate rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                        isActive
+                          ? "bg-stone-200/80 text-stone-900"
+                          : "text-stone-600 hover:bg-stone-200/60 hover:text-stone-900"
+                      }`}
+                    >
+                      {item.title ?? "Anonymization"}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -206,23 +205,24 @@ export function DashboardSidebar({
           <CommandInput placeholder="Search sessions, prompts, or IDs..." />
           <CommandList>
             <CommandEmpty>No matches found.</CommandEmpty>
-            <CommandGroup heading="You can search by">
-              <CommandItem disabled>Session title</CommandItem>
-              <CommandItem disabled>Original text</CommandItem>
-              <CommandItem disabled>Protected text</CommandItem>
+            <CommandGroup heading="You can search by session title and session ID">
+              {/* <CommandItem disabled>Session title</CommandItem>
+              <CommandItem disabled>Session ID</CommandItem> */}
             </CommandGroup>
             <CommandSeparator />
             <CommandGroup heading="Sessions">
-              {recents.map((item) => (
+              {sessions.map((item) => (
                 <CommandItem
                   key={item.id}
-                  value={item.title}
+                  value={item.title ?? item.id}
                   onSelect={() => {
-                    globalThis.location.href = `/sessions/${item.id}`
-                    setSearchOpen(false)
+                    globalThis.location.href = `/sessions/${item.id}`;
+                    setSearchOpen(false);
                   }}
                 >
-                  <span className="truncate">{item.title}</span>
+                  <span className="truncate">
+                    {item.title ?? "Anonymization"}
+                  </span>
                   <CommandShortcut>↵</CommandShortcut>
                 </CommandItem>
               ))}
@@ -231,5 +231,5 @@ export function DashboardSidebar({
         </Command>
       </CommandDialog>
     </>
-  )
+  );
 }
