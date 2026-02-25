@@ -29,6 +29,11 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { SessionActionsMenuContent } from "@/components/session-actions-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { processText } from "@/lib/mask-engine";
 import type { MaskMapping, MaskMappingEntry } from "@/lib/mask-types";
 import {
@@ -573,16 +578,29 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
           </Button>
 
           {Object.keys(mapping ?? {}).length > 0 && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setRehydrateOpen((prev) => !prev)}
-              title="Paste an LLM reply that still contains [TOKENS] and we’ll swap them back to the real text."
-              className="absolute hidden text-xs font-semibold text-stone-500 hover:text-stone-800 sm:inline-flex right-0 top-1/2 -translate-y-1/2 rounded-full"
-            >
-              {rehydrateOpen ? "Hide rehydrate" : "Rehydrate LLM reply"}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger className="absolute right-0 top-1/2 -translate-y-1/2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setRehydrateOpen((prev) => !prev)}
+                  className=" hidden text-xs font-semibold text-stone-500 hover:text-stone-800 sm:inline-flex   rounded-full"
+                >
+                  {rehydrateOpen ? "Hide rehydrate" : "Rehydrate LLM reply"}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" align="end">
+                <span className="max-w-xs text-[11px] leading-snug">
+                  Paste an LLM reply that still contains{" "}
+                  <code className="rounded bg-stone-800/80 px-1 py-0.5 text-[10px] text-stone-50">
+                    [TOKENS]
+                  </code>{" "}
+                  like <code>[PERSON_1]</code> and we&apos;ll swap them back to
+                  the real text using this session&apos;s mappings.
+                </span>
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>
