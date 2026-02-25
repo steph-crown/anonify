@@ -138,6 +138,9 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
   const [renamingTitle, setRenamingTitle] = useState(false);
   const [renameTitleInput, setRenameTitleInput] = useState("");
   const [deleteSessionOpen, setDeleteSessionOpen] = useState(false);
+  const [rehydrateSource, setRehydrateSource] = useState("");
+  const [rehydrateResult, setRehydrateResult] = useState("");
+  const [rehydrateOpen, setRehydrateOpen] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -214,6 +217,28 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
     toast.success("Copied to clipboard");
   }
 
+  function handleRehydrate() {
+    const source = rehydrateSource;
+    if (!source.trim()) {
+      setRehydrateResult("");
+      return;
+    }
+
+    let result = source;
+    Object.values(mapping ?? {}).forEach((entry) => {
+      if (!entry.mask || !entry.original) return;
+      result = result.split(entry.mask).join(entry.original);
+    });
+
+    setRehydrateResult(result);
+  }
+
+  async function copyRehydrateResult() {
+    if (!rehydrateResult.trim()) return;
+    await navigator.clipboard.writeText(rehydrateResult);
+    toast.success("Restored text copied");
+  }
+
   async function handleClearSession() {
     if (!sessionId) return;
     await deleteAnonymizationsBySessionId(sessionId);
@@ -264,9 +289,7 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
     setMasked((prev) => {
       if (!prev) return prev;
       return (
-        prev.slice(0, index) +
-        original +
-        prev.slice(index + maskToken.length)
+        prev.slice(0, index) + original + prev.slice(index + maskToken.length)
       );
     });
 
@@ -285,9 +308,7 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
     const original = getOriginalForMask(maskToken);
     if (!original) return;
 
-    setMasked((prev) =>
-      prev ? prev.split(maskToken).join(original) : prev,
-    );
+    setMasked((prev) => (prev ? prev.split(maskToken).join(original) : prev));
 
     setHistory((prev) =>
       prev.map((item) => {
@@ -539,17 +560,96 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
         </div>
       </section>
 
-      {/* Anonymize button — centered below editors */}
-      <div className="flex justify-center">
-        <Button
-          type="button"
-          disabled={loading || !currentRaw || isDuplicateInput}
-          onClick={handleAnonymize}
-          className="rounded-full bg-stone-900 px-6 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 disabled:opacity-60 h-10"
-        >
-          Anonymize
-        </Button>
+      {/* Anonymize button + rehydrate toggle */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex justify-center flex-1 relative">
+          <Button
+            type="button"
+            disabled={loading || !currentRaw || isDuplicateInput}
+            onClick={handleAnonymize}
+            className="rounded-full bg-stone-900 px-6 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 disabled:opacity-60 h-10"
+          >
+            Anonymize
+          </Button>
+
+          {Object.keys(mapping ?? {}).length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setRehydrateOpen((prev) => !prev)}
+              title="Paste an LLM reply that still contains [TOKENS] and we’ll swap them back to the real text."
+              className="absolute hidden text-xs font-semibold text-stone-500 hover:text-stone-800 sm:inline-flex right-0 top-1/2 -translate-y-1/2 rounded-full"
+            >
+              {rehydrateOpen ? "Hide rehydrate" : "Rehydrate LLM reply"}
+            </Button>
+          )}
+        </div>
       </div>
+
+      {rehydrateOpen && Object.keys(mapping ?? {}).length > 0 && (
+        <section className="mt-8 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Rehydrate LLM response
+            </h2>
+            <p className="text-[11px] text-stone-400">
+              Paste a reply containing [TOKENS] and we&apos;ll swap back the
+              originals.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
+              <div className="flex h-8 items-center border-b border-stone-200 bg-stone-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
+                <span>Masked response</span>
+              </div>
+              <textarea
+                rows={6}
+                value={rehydrateSource}
+                onChange={(e) => setRehydrateSource(e.target.value)}
+                className="block h-[160px] w-full resize-none bg-transparent px-4 py-3 text-sm leading-relaxed text-stone-800 placeholder:text-stone-300 focus:outline-none"
+                placeholder="Paste the LLM reply that still contains [PERSON_1], [ORG_2], etc..."
+              />
+            </div>
+            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
+              <div className="flex h-8 items-center justify-between gap-2 border-b border-stone-200 bg-stone-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
+                <span>Restored text</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={copyRehydrateResult}
+                  disabled={!rehydrateResult.trim()}
+                  className="h-7 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-stone-500 hover:text-stone-800 disabled:opacity-50"
+                >
+                  Copy
+                </Button>
+              </div>
+              <div className="h-[160px] overflow-y-auto px-4 py-3 text-sm leading-relaxed text-stone-800 whitespace-pre-wrap">
+                {rehydrateResult ? (
+                  rehydrateResult
+                ) : (
+                  <span className="text-stone-300">
+                    Restored text will appear here after rehydration.
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-start">
+            <Button
+              type="button"
+              onClick={handleRehydrate}
+              disabled={
+                !rehydrateSource.trim() || !Object.keys(mapping ?? {}).length
+              }
+              className="h-8 rounded-full bg-stone-900 px-4 py-2 text-xs font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 disabled:opacity-60"
+            >
+              Rehydrate
+            </Button>
+          </div>
+        </section>
+      )}
 
       {/* History list */}
       <section className="mt-2 space-y-3">
