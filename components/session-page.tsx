@@ -57,9 +57,9 @@ export function SessionPage({
       <section className="grid gap-6 md:grid-cols-2">
         {/* Input editor */}
         <div className="flex flex-col gap-3">
-          <div className="text-sm font-medium text-stone-700">Raw prompt</div>
+          {/* <div className="text-sm font-medium text-stone-700">Raw prompt</div> */}
           <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
-            <div className="flex items-center gap-1.5 border-b border-stone-200 bg-stone-100 px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-stone-500">
+            <div className="flex items-center gap-1.5 border-b border-stone-200 bg-stone-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
               <span className="size-2.5 rounded-full bg-stone-300" />
               <span className="size-2.5 rounded-full bg-stone-300" />
               <span className="size-2.5 rounded-full bg-stone-300" />
@@ -75,11 +75,11 @@ export function SessionPage({
 
         {/* Output editor */}
         <div className="flex flex-col gap-3">
-          <div className="text-sm font-medium text-stone-700">
+          {/* <div className="text-sm font-medium text-stone-700">
             Protected prompt
-          </div>
+          </div> */}
           <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
-            <div className="flex items-center gap-1.5 border-b border-stone-200 bg-stone-100 px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-stone-500">
+            <div className="flex items-center gap-1.5 border-b border-stone-200 bg-stone-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
               <span className="size-2.5 rounded-full bg-[#FE5F57]" />
               <span className="size-2.5 rounded-full bg-[#FEBB2F]" />
               <span className="size-2.5 rounded-full bg-[#28C840]" />
