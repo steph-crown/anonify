@@ -153,6 +153,49 @@ function detectRegex(text: string): DetectionSpan[] {
     });
   }
 
+  // Phone numbers (basic international / NANP-style)
+  const phoneRe =
+    /(?:\+?\d{1,3}[\s-]?)?(?:\(\d{2,4}\)|\d{2,4})[\s-]?\d{3}[\s-]?\d{3,4}\b/g;
+  for (const match of text.matchAll(phoneRe)) {
+    if (!match[0]) continue;
+    const value = match[0];
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "ID",
+    });
+  }
+
+  // MAC addresses
+  const macRe = /\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\b/g;
+  for (const match of text.matchAll(macRe)) {
+    if (!match[0]) continue;
+    const value = match[0];
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "CUSTOM",
+    });
+  }
+
+  // Ethereum / crypto-style addresses
+  const ethRe = /\b0x[0-9a-fA-F]{40}\b/g;
+  for (const match of text.matchAll(ethRe)) {
+    if (!match[0]) continue;
+    const value = match[0];
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "CUSTOM",
+    });
+  }
+
   return spans;
 }
 
@@ -263,6 +306,34 @@ function detectHostnames(text: string): DetectionSpan[] {
   return spans;
 }
 
+// Additional structured secret tokens (shorter but clearly token-like)
+function detectSecretTokens(text: string): DetectionSpan[] {
+  const spans: DetectionSpan[] = [];
+
+  // Tokens like "stg_6772_x92_kLop0" – letters, digits, underscores, reasonably long.
+  const tokenRe = /\b[a-zA-Z0-9_]{16,}\b/g;
+  for (const match of text.matchAll(tokenRe)) {
+    const value = match[0];
+    if (!value) continue;
+
+    // Require at least one letter, one digit, and one underscore to avoid
+    // swallowing generic all-caps identifiers.
+    if (!/[A-Za-z]/.test(value) || !/\d/.test(value) || !/_/.test(value)) {
+      continue;
+    }
+
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "PASSWORD",
+    });
+  }
+
+  return spans;
+}
+
 // Step 1e: contextual numeric identifiers (routing numbers, account tails, incident IDs)
 function detectContextualNumbers(text: string): DetectionSpan[] {
   const spans: DetectionSpan[] = [];
@@ -308,6 +379,118 @@ function detectContextualNumbers(text: string): DetectionSpan[] {
       end: idx + value.length,
       value,
       category: "ID",
+    });
+  }
+
+  // Recovery / 2FA codes like "recovery code: 9928-1102"
+
+  // Recovery / 2FA codes like "recovery code: 9928-1102"
+  const recoveryCodeRe =
+    /(recovery code|2fa code|two[- ]factor code|backup code)\s*:\s*([0-9]{4}-[0-9]{4})/gi;
+  for (const match of text.matchAll(recoveryCodeRe)) {
+    const value = match[2];
+    if (!value) continue;
+    const idx = text.indexOf(value, match.index ?? 0);
+    if (idx === -1) continue;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "PASSWORD",
+    });
+  }
+
+  // Medical record numbers / patient IDs (MRN, patient ID ...)
+  const mrnRe =
+    /\b(?:MRN|patient ID|patientID|patient number)[:\s-]*([A-Z0-9-]{5,})\b/gi;
+  for (const match of text.matchAll(mrnRe)) {
+    const value = match[1];
+    if (!value) continue;
+    const idx = text.indexOf(value, match.index ?? 0);
+    if (idx === -1) continue;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "ID",
+    });
+  }
+
+  // Insurance / policy numbers
+  const policyRe =
+    /\b(policy number|policy no\.?)[:\s-]*([A-Z0-9-]{5,})\b/gi;
+  for (const match of text.matchAll(policyRe)) {
+    const value = match[2];
+    if (!value) continue;
+    const idx = text.indexOf(value, match.index ?? 0);
+    if (idx === -1) continue;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "ID",
+    });
+  }
+
+  // Short access / alarm codes near "master code" etc., e.g. "master code 1234#"
+  const masterCodeRe =
+    /(master code|alarm code|panel code)[^0-9#]*([0-9#]{4,})/gi;
+  for (const match of text.matchAll(masterCodeRe)) {
+    const value = match[2];
+    if (!value) continue;
+    const idx = text.indexOf(value, match.index ?? 0);
+    if (idx === -1) continue;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "PASSWORD",
+    });
+  }
+
+  return spans;
+}
+
+// Step 1f: seed phrases / mnemonics (treated as high-value secrets)
+function detectSeedPhrases(text: string): DetectionSpan[] {
+  const spans: DetectionSpan[] = [];
+
+  // Look for constructs like: "seed phrase ... "word1 word2 ..."" or "starts with the words: "...""
+  const seedRe =
+    /(seed phrase[^"“]*["“]([^"”]+)["”])|(starts with the words:\s*["“]([^"”]+)["”])/gi;
+
+  for (const match of text.matchAll(seedRe)) {
+    const value = (match[2] || match[4])?.trim();
+    if (!value) continue;
+    const idx = text.indexOf(value, match.index ?? 0);
+    if (idx === -1) continue;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "PASSWORD",
+    });
+  }
+
+  return spans;
+}
+
+// Step 1g: geo-coordinates (lat/long pairs)
+function detectGeoCoordinates(text: string): DetectionSpan[] {
+  const spans: DetectionSpan[] = [];
+
+  // Pattern like "6.5244° N, 3.3792° E"
+  const coordRe =
+    /\b(\d{1,3}\.\d+°\s*[NS],\s*\d{1,3}\.\d+°\s*[EW])\b/g;
+  for (const match of text.matchAll(coordRe)) {
+    const value = match[1];
+    if (!value) continue;
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "LOC",
     });
   }
 
@@ -371,6 +554,21 @@ function detectNamedEntities(text: string): DetectionSpan[] {
     });
   }
 
+  // Additional pattern: names with quoted nicknames, e.g. Akorede "Steph" Crown
+  const nameWithNickRe =
+    /\b([A-Z][a-z]+)\s+"[A-Za-z]+"(?:\s+[A-Z][a-z]+)+\b/g;
+  for (const match of text.matchAll(nameWithNickRe)) {
+    const value = match[0];
+    if (!value) continue;
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "PERSON",
+    });
+  }
+
   return spans;
 }
 
@@ -385,8 +583,16 @@ function mergeAndSortSpans(spans: DetectionSpan[]): DetectionSpan[] {
       continue;
     }
 
-    // If overlapping, keep the earlier (already in result) and skip new one
-    if (span.start < last.end) continue;
+    // If overlapping, prefer the *longer* span so multi-word entities
+    // like "Marcus Vancamp" win over single-word matches like "Marcus".
+    if (span.start < last.end) {
+      const lastLen = last.end - last.start;
+      const spanLen = span.end - span.start;
+      if (spanLen > lastLen) {
+        result[result.length - 1] = span;
+      }
+      continue;
+    }
 
     result.push(span);
   }
@@ -437,6 +643,9 @@ export function processText(
   spans.push(...detectHostnames(text));
   spans.push(...detectContextualNumbers(text));
   spans.push(...detectHighEntropy(text));
+  spans.push(...detectSeedPhrases(text));
+  spans.push(...detectSecretTokens(text));
+  spans.push(...detectGeoCoordinates(text));
 
   // Step 2: lightweight context worker
   spans.push(...detectNamedEntities(text));

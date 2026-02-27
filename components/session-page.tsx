@@ -373,8 +373,8 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
 
   return (
     <div className="flex flex-col gap-8 ">
-      <header className="flex items-center justify-between pb-0 pt-4 sm:pt-12">
-        <div className="w-max">
+      <header className="flex flex-col gap-4 pb-0 pt-4 sm:flex-row sm:items-center sm:justify-between sm:pt-12">
+        <div className="sm:w-max">
           {isNew || !sessionId ? (
             <h1 className="text-2xl font-bold tracking-tight text-stone-900">
               New session
@@ -449,7 +449,7 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
               <Button
                 type="button"
                 disabled={mappingEntries.length === 0}
-                className="inline-flex items-center gap-2 rounded-full bg-stone-900 px-4 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 disabled:opacity-60 h-10"
+                className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-stone-900 px-4 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 disabled:opacity-60 h-10 sm:mt-0 sm:w-auto"
               >
                 <svg
                   width="24"
@@ -468,7 +468,7 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
               </Button>
             }
           />
-          <DialogContent className="max-h-[500px] max-w-6xl overflow-hidden flex flex-col sm:max-w-lg">
+          <DialogContent className="flex max-h-[500px] max-w-6xl flex-col overflow-hidden sm:max-w-lg">
             <DialogHeader>
               <DialogTitle className="font-semibold">Mask mapping</DialogTitle>
             </DialogHeader>
@@ -566,26 +566,28 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
       </section>
 
       {/* Anonymize button + rehydrate toggle */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex justify-center flex-1 relative">
+      <div className="mt-2 flex flex-col items-stretch gap-2 sm:mt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex justify-center sm:flex-1">
           <Button
             type="button"
             disabled={loading || !currentRaw || isDuplicateInput}
             onClick={handleAnonymize}
-            className="rounded-full bg-stone-900 px-6 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 disabled:opacity-60 h-10"
+            className="w-full rounded-full bg-stone-900 px-6 py-2.5 text-sm font-semibold text-[#F5F0E5] transition-colors hover:bg-stone-800 disabled:opacity-60 h-10 sm:w-auto"
           >
             Anonymize
           </Button>
+        </div>
 
-          {Object.keys(mapping ?? {}).length > 0 && (
+        {Object.keys(mapping ?? {}).length > 0 && (
+          <div className="flex justify-center sm:justify-end">
             <Tooltip>
-              <TooltipTrigger className="absolute right-0 top-1/2 -translate-y-1/2">
+              <TooltipTrigger>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => setRehydrateOpen((prev) => !prev)}
-                  className=" hidden text-xs font-semibold text-stone-500 hover:text-stone-800 sm:inline-flex   rounded-full"
+                  className="w-full rounded-full text-xs font-semibold text-stone-500 hover:text-stone-800 sm:w-auto"
                 >
                   {rehydrateOpen ? "Hide rehydrate" : "Rehydrate LLM reply"}
                 </Button>
@@ -601,8 +603,8 @@ export function SessionPage({ sessionId: initialId, mode }: SessionPageProps) {
                 </span>
               </TooltipContent>
             </Tooltip>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {rehydrateOpen && Object.keys(mapping ?? {}).length > 0 && (
