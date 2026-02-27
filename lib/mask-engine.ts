@@ -497,6 +497,30 @@ function detectGeoCoordinates(text: string): DetectionSpan[] {
   return spans;
 }
 
+// Step 1h: street addresses with trailing locality, e.g.
+// "1201 North Market Street, Wilmington" or
+// "88 Kingsway Road, Ikoyi"
+function detectAddresses(text: string): DetectionSpan[] {
+  const spans: DetectionSpan[] = [];
+
+  const addressRe =
+    /\b\d{1,6}\s+[A-Za-z0-9 .'-]+,\s*[A-Z][A-Za-z .'-]+(?:,\s*[A-Z]{2})?\b/g;
+
+  for (const match of text.matchAll(addressRe)) {
+    const value = match[0];
+    if (!value) continue;
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "LOC",
+    });
+  }
+
+  return spans;
+}
+
 // Step 2: context worker using compromise.js plus heuristic capitalised sequences
 function detectNamedEntities(text: string): DetectionSpan[] {
   const spans: DetectionSpan[] = [];
@@ -559,6 +583,21 @@ function detectNamedEntities(text: string): DetectionSpan[] {
     /\b([A-Z][a-z]+)\s+"[A-Za-z]+"(?:\s+[A-Z][a-z]+)+\b/g;
   for (const match of text.matchAll(nameWithNickRe)) {
     const value = match[0];
+    if (!value) continue;
+    const idx = match.index ?? 0;
+    addSpan(spans, {
+      start: idx,
+      end: idx + value.length,
+      value,
+      category: "PERSON",
+    });
+  }
+
+  // Names in short lists like "Chibuike, Akorede, and Jeyi"
+  const nameList3Re =
+    /\b([A-Z][a-z]+,\s+[A-Z][a-z]+,\s+and\s+[A-Z][a-z]+)\b/g;
+  for (const match of text.matchAll(nameList3Re)) {
+    const value = match[1];
     if (!value) continue;
     const idx = match.index ?? 0;
     addSpan(spans, {
@@ -646,6 +685,7 @@ export function processText(
   spans.push(...detectSeedPhrases(text));
   spans.push(...detectSecretTokens(text));
   spans.push(...detectGeoCoordinates(text));
+  spans.push(...detectAddresses(text));
 
   // Step 2: lightweight context worker
   spans.push(...detectNamedEntities(text));
